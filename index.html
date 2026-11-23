@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我们的点点滴滴</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+  /* ========== 全局基础 ========== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root{
+    --pink:#ff8fab;
+    --pink-soft:#ffc2d4;
+    --rose:#e5638c;
+    --cream:#fff7f9;
+    --text:#5a3a46;
+    --text-soft:#8a6472;
+    --card:#ffffff;
+  }
+  html{ scroll-behavior:auto; }
+  body{
+    font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--text);
+    background:linear-gradient(180deg,#fff0f4 0%,#ffe4ec 30%,#fff7f9 60%,#fdeef3 100%);
+    overflow-x:hidden;
+  }
+
+  /* ========== 开场封面（点一下才放音乐） ========== */
+  #cover{
+    position:fixed; inset:0; z-index:999;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 50% 35%,#ffd6e2 0%,#ffb3c9 45%,#f78fb0 100%);
+    text-align:center; padding:24px; transition:opacity .8s ease, visibility .8s;
+  }
+  #cover.hide{ opacity:0; visibility:hidden; pointer-events:none; }
+  #cover .heart{ font-size:64px; animation:beat 1.4s ease-in-out infinite; }
+  #cover h1{
+    font-family:"Noto Serif SC",serif; font-weight:900;
+    font-size:clamp(28px,7vw,46px); color:#fff; margin:18px 0 12px;
+    text-shadow:0 4px 18px rgba(213,80,120,.4);
+  }
+  #cover p{ color:#fff; opacity:.92; font-size:clamp(14px,3.5vw,17px); margin-bottom:34px; letter-spacing:1px; }
+  #enterBtn{
+    border:none; cursor:pointer;
+    padding:15px 42px; border-radius:999px;
+    background:#fff; color:var(--rose);
+    font-size:17px; font-weight:700; letter-spacing:2px;
+    box-shadow:0 10px 30px rgba(200,60,100,.35);
+    transition:transform .25s, box-shadow .25s;
+  }
+  #enterBtn:hover{ transform:translateY(-3px) scale(1.03); box-shadow:0 14px 36px rgba(200,60,100,.45); }
+  @keyframes beat{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.18)} }
+
+  /* ========== 顶部 Hero ========== */
+  .hero{
+    min-height:88vh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center; padding:60px 22px 30px;
+  }
+  .hero .names{
+    font-family:"Noto Serif SC",serif; font-weight:900;
+    font-size:clamp(30px,8vw,52px); color:var(--rose);
+    letter-spacing:3px; line-height:1.4;
+  }
+  .hero .names span{ color:var(--pink); }
+  .hero .sub{ margin-top:16px; color:var(--text-soft); font-size:clamp(14px,3.6vw,18px); }
+  .hero .date-line{ margin-top:10px; color:var(--text-soft); font-size:14px; }
+  .hero .scroll-hint{ margin-top:40px; color:var(--pink); animation:beat 1.6s infinite; font-size:14px; }
+
+  /* ========== 回忆卡片 ========== */
+  .wrap{ max-width:720px; margin:0 auto; padding:20px 18px 80px; }
+  .card{
+    background:var(--card); border-radius:24px; padding:26px 22px;
+    margin:34px 0; box-shadow:0 12px 34px rgba(229,99,140,.13);
+    border:1px solid #ffe3ec; overflow:hidden;
+    opacity:0; transform:translateY(30px); transition:opacity .7s ease, transform .7s ease;
+  }
+  .card.show{ opacity:1; transform:translateY(0); }
+  .card .date{
+    display:inline-block; font-size:13px; color:#fff; background:var(--pink-soft);
+    padding:5px 14px; border-radius:999px; margin-bottom:14px; letter-spacing:1px;
+  }
+  .card h2{ font-family:"Noto Serif SC",serif; font-size:clamp(20px,5vw,25px); color:var(--text); margin-bottom:12px; }
+  .card p{ font-size:15.5px; line-height:1.9; color:var(--text-soft); }
+  .card img{
+    width:100%; border-radius:18px; margin-top:16px; display:block;
+    aspect-ratio:4/3; object-fit:cover; background:#ffeef3;
+  }
+  .card .note{ margin-top:12px; font-size:13px; color:#c99; }
+
+  /* ========== 结尾 ========== */
+  .end{ text-align:center; padding:60px 22px 100px; }
+  .end .big{ font-family:"Noto Serif SC",serif; font-size:clamp(22px,6vw,32px); color:var(--rose); margin-bottom:14px; }
+  .end .small{ color:var(--text-soft); font-size:14px; }
+
+  /* ========== 悬浮音乐按钮 ========== */
+  #musicBtn{
+    position:fixed; right:18px; bottom:24px; z-index:500;
+    width:48px; height:48px; border-radius:50%; border:none; cursor:pointer;
+    background:var(--rose); color:#fff; font-size:20px;
+    box-shadow:0 8px 22px rgba(200,60,100,.35);
+  }
+
+  /* ========== 飘落爱心背景 ========== */
+  .float-heart{ position:fixed; bottom:-30px; z-index:1; color:rgba(255,143,171,.35); pointer-events:none; animation:floatUp linear infinite; }
+  @keyframes floatUp{
+    0%{ transform:translateY(0) rotate(0); opacity:0; }
+    10%{opacity:.8;}
+    100%{ transform:translateY(-110vh) rotate(360deg); opacity:0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 背景音乐：把你自己的音乐文件放到 assets 文件夹，文件名改成 music.mp3 即可；或改下面 src ===== -->
+<audio id="bgm" src="https://res.cloudinary.com/ddja3unok/video/upload/v1795354167/%E5%93%AA%E9%87%8C%E9%83%BD%E6%98%AF%E4%BD%A0_bfyxwz.mp3" loop preload="auto"></audio>
+
+<!-- ===== 开场封面 ===== -->
+<div id="cover">
+  <div class="heart">💗</div>
+  <h1>我们的点点滴滴</h1>
+  <p>这里收藏着属于我们两个人的回忆<br>轻点下方按钮，听着音乐慢慢翻阅</p>
+  <button id="enterBtn">进入我们的故事</button>
+</div>
+
+<!-- ===== 顶部：把名字、在一起日期换成你们的 ===== -->
+<section class="hero">
+  <div class="names">韩晓春 <span>❤</span> 高子萌</div>
+  <div class="sub">从相遇那天起，每一刻都想珍藏</div>
+  <div class="date-line">2026.9.4 —— 至今</div>
+  <div class="scroll-hint">↓ 往下滑动，翻看我们的回忆 ↓</div>
+</section>
+
+<!-- ===== 回忆卡片区：文字直接改，图片把文件放进 assets 并替换 src ===== -->
+<main class="wrap">
+
+  <!-- 卡片 1 -->
+  <article class="card">
+    <span class="date">2026.9.5</span>
+    <h2>第一次遇见</h2>
+    <h3>梦开始的地方小寨Helens海伦司小酒馆</h3>
+    <p>第一次见面的样子那一天宝宝画了一个很好看的妆，宝宝教会了我玩筛子我从一点都不会宝宝细心的教我，我会玩了以后宝宝叫的她的好朋友也来了，她的朋友给宝宝哪里她最爱抽的利群寒暄完后现在进入摇筛子环节，我不会玩但是宝宝不开我一直是她朋友在开我，我知道她是在保护我不想让我喝很多酒我看在眼里急在心里所以有时候我会，接一杯喝还被调侃了说娃是渴了润润嗓子，我是害怕宝宝喝多。但是宝宝比我想象的能喝，宝宝最后喝完了还要了5瓶啤酒和她的那个朋友继续喝酒，那时候我啥也不是所以我也合适的身份管。我最后虽说过了一个很冷的夜晚但是我的心一直是烫的因为我第一次看到宝宝就被勾魂了一样离不开了她</p>
+    <img src="https://res.cloudinary.com/ddja3unok/image/upload/v1795357904/122APPLE_IMG_2471_4073_dsrzfg.jpg" alt="第一相约酒馆">
+  </article>
+
+
+  <!-- 卡片 1 -->
+  <article class="card">
+    <span class="date">2026.9.8</span>
+    <h2>第一次遇见</h2>
+    <p>第一次见面的样子我不敢牵着你的手，宝宝为了避免尴尬提议我们去哪玩，宝宝问我我以前总会说随便。现在想起来还会笑。宝宝先是提议找人打麻将，我说我不会打宝宝，宝宝说要教我打我。宝宝给她朋友打电话朋友说不在西安我们没有打成，最后我们一起去了学校对面的网吧，这是我第二次跟宝宝去玩，在我的认知里我的宝宝天下无敌而且可会带我去玩了。</p>
+    <img src="https://res.cloudinary.com/ddja3unok/image/upload/v1795360773/mmexport1795360621310_i05cej.jpg" alt="第一次牵手的照片">
+  </article>
+
+  <!-- 卡片 2 -->
+  <article class="card">
+    <span class="date">2026.10.12  18：15 </span>
+    <h2>第一次一起牵手回家</h2>
+    <p>这是我第一次牵着宝宝的手最踏实的一次，我牵着宝宝的手一起坐地铁回家的照片。我这个人很孤僻我喜欢自己一个人但是当你闯进我的生活里的时候我毫无保留的爱上了你高子萌。我可以啥都可以不要但是唯独不能没有你。</p>
+    <img src="https://res.cloudinary.com/ddja3unok/image/upload/v1795352411/IMG_3177_b8l7mk.jpg" alt="第一次一起出门的照片">
+  </article>
+
+   <!-- 卡片 3 -->
+  <article class="card">
+    <span class="date">2026.10.13</span>
+    <h2>我的小猪猪陪我上课</h2>
+    <p>这一天是周二的下午我在上Liux宝宝来陪我上课我把宝宝惹生气我哄宝宝的时候拍的，我当时不懂事我一直惹宝宝生气，在我认知里处了一个大吵架里我一直在墨守成规不让宝宝抽烟而吵架，宝宝曾经也有问题问我为啥我谈了这么多任没有一人管我偏偏你管我，还会说气话宝宝常常会说你要觉的我抽烟你可以找个不抽烟的呀，我现在给宝宝你一一解答我爱的是你我不会在找其他人，是你觉的谈了这么多又不差我这一个还有毒鸡汤说的“下一任更好”，“下一更乖”。但是我只喜欢你我把我的整个心早都给了你我在幻想里会经常排练你嫁给我的画面。你是我这辈子最想娶的人，我不在去拿我可守陈规的不让你抽烟的规矩不是我投降了是我知道了我这样坐会适得其反，我也深知如果我继续这样的话我很有可能失去你我不敢赌我害怕失去你的世界没有你的世界了我活的仿佛没有了任何希望，你也知道抽烟的不好，我这次也不是来批判宝宝的我知道宝宝会改变的需要时间，我相信你我爱你高子萌</p>
+    <img src="https://res.cloudinary.com/ddja3unok/image/upload/v1795362294/1795362150816_1_ernoub.jpg" alt="最难忘的一天">
+  </article>
+
+  <!-- 卡片 3 -->
+  <article class="card">
+    <span class="date">2026.11.10</span>
+    <h2>最难忘的一天</h2>
+    <p>那一天是我们吵架最很的一次没有之一我犯贱去找宝宝的前男友当时我是抱着啥想法的去的呢，实话实说我也不怕你笑话我看到抖音上说一个女生跟你发生的关系越快说明她跟很多男生都一样，后来我知道了我错了我在拿她对我的相信我一直在践踏她的尊严，她是我认定的人，但是当时是真的想打破砂锅问道底，但是从来没有替她考虑过她最信任的人从来不信任她还从别人的口中了解她。我伤害了她，我记得最深的一次是宝宝说你不要缠着我了在缠着我就报警。我但是不敢说话因为我现在就是属于死缠烂打得纠缠我知道这样不对但是我又想挽留你所以我很不的给宝宝跪下，对我最后实在没有办法当时也有想过男儿膝下有黄金这辈子只跪两个人1.父母2.爱人。我转念一想她不就是我爱人吗？我毫不犹豫的跪。让我跟确信了一件事，我爱的是她这个人过往让她过去好了，等宝宝想说的时候自然会给我说，不想说我也不强求我只想当一个你有啥事情能给我讲，还有我可以依靠，我不是别人我是你的最坚实的厚盾，哪怕它们都不理解你我会理解你，因为你还有我。我虽说不是万能的但是那怕让我付出一切我觉得你值得因为你是我认定的人我爱你永远也只爱你一个人。</p>
+    <img src="https://res.cloudinary.com/ddja3unok/image/upload/v1795443270/7fff6872e84f703cbf852314b10faf37_mij8zo.jpg" alt="最难忘的一天">
+    <a href="https://res.cloudinary.com/ddja3unok/image/upload/v1795443270/7fff6872e84f703cbf852314b10faf37_mij8zo.jpg">这里是我犯贱的记录</a>
+  </article>
+
+  <!-- 卡片 4 -->
+  <article class="card">
+    <span class="date">2026.10.18</span>
+    <h2>美美的一天</h2>
+    <p>这天姐姐来我们家吃完饭要去转转，我和萌萌计划了一下时间我们合理规划了时间刚好今天生活费也发下来了。我知道宝宝想给我张面子在外人面前宝宝去化了一个很好看的妆我就是一个大直男我不知道如何表达我一直在挑刺我，有没有想过她的感受自己的男朋友先自己画淡妆浓了像精神小妹了当时我说出精神小妹时候也没有想到宝宝的感受，对不起宝宝我一边一让你失望。我现在知道了我不会再做事不考虑你了，你又不是别人我最因该的就是在意你的感受。其他人跟我没关系我爱你萌萌</p>
+    <img src="https://res.cloudinary.com/ddja3unok/image/upload/v1795352694/13853_eefabg.jpg" alt="日常小事">
+  </article>
+
+  <!-- 卡片 5 -->
+  <article class="card">
+    <span class="date"></span>
+    <h2>跳舞</h2>
+    <p>我真的可以这么说我是世界上最幸福的人，我看到了我此生最美的舞蹈，这一天我陪宝宝去跳舞了宝宝羞涩不敢看完但是我看到了宝宝的每一个动作做的都很认知很标准，我只是偷偷的藏在心里我从来我说我默默的给宝宝加油，这张图片是宝宝带我去吃炝锅鱼我带了好利来的小蛋糕，后来我跟宝宝吃得时候蛋糕已经斜了但是我和宝宝把她吃完了宝宝也没有嫌弃我宝宝能吃苦，跟我过的日子里我的宝宝从来没有嫌弃我穷。我也知道穷不可怕可怕的是我要是没有骨气，不能把最好的给我宝宝我才是那个最没有本事的那个。</p>
+    <img src="https://res.cloudinary.com/ddja3unok/image/upload/v1795352051/1469_eoh89w.jpg" alt="和好之后">
+  </article>
+
+
+
+</main>
+
+<!-- ===== 结尾 ===== -->
+<section class="end">
+  <div class="big">故事还长，我们继续写下去</div>
+  <div class="small">Made with ❤ for us</div>
+</section>
+
+<!-- 音乐开关 -->
+<button id="musicBtn" title="播放/暂停音乐">🎵</button>
+
+<script>
+/* ================= 基础元素 ================= */
+const cover    = document.getElementById('cover');
+const enterBtn = document.getElementById('enterBtn');
+const bgm      = document.getElementById('bgm');
+const musicBtn = document.getElementById('musicBtn');
+
+/* ================= 自动滚动配置 ================= */
+let autoTimer = null;
+const SPEED   = 1;        // 每帧滚动像素，越小越慢（1 很慢，2 稍快）
+const TICK    = 120;      // 间隔毫秒
+
+/* 启动自动往下滑 */
+function startAutoScroll(){
+  if(autoTimer) return;
+  autoTimer = setInterval(()=>{
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    if(window.scrollY >= max - 4){ stopAutoScroll(); return; }  // 滑到底就停
+    window.scrollBy(0, SPEED);
+  }, TICK);
+}
+
+/* 停止自动滚动，交还给手动 */
+function stopAutoScroll(){
+  if(autoTimer){ clearInterval(autoTimer); autoTimer = null; }
+}
+
+/* 监听手动操作：鼠标滚轮 / 触摸滑动 / 方向键 / 空格，任意一个就停止自动滚动 */
+['wheel','touchstart','keydown'].forEach(evt=>{
+  window.addEventListener(evt, (e)=>{
+    if(evt==='keydown'){
+      const allow=['ArrowUp','ArrowDown',' ','PageUp','PageHome','PageEnd','Home','End'];
+      if(!allow.includes(e.key)) return;
+    }
+    stopAutoScroll();
+  }, {passive:true});
+});
+
+/* ================= 进入封面：放音乐 + 开始自动滑 ================= */
+enterBtn.addEventListener('click', ()=>{
+  cover.classList.add('hide');
+  bgm.play().catch(()=>{
+    // 浏览器拦截自动播放时，用户可点右下角按钮手动开
+    musicBtn.textContent='🎵';
+  });
+  startAutoScroll();
+});
+
+/* ================= 音乐开关 ================= */
+musicBtn.addEventListener('click', ()=>{
+  if(bgm.paused){ bgm.play(); musicBtn.textContent='🎵'; }
+  else{ bgm.pause(); musicBtn.textContent='🔇'; }
+});
+
+/* ================= 卡片进入视口淡入动画 ================= */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('show'); });
+},{threshold:.12});
+document.querySelectorAll('.card').forEach(c=>io.observe(c));
+
+/* ================= 背景飘落爱心 ================= */
+(function(){
+  const heartChars=['💗','💕','🩷','💖'];
+  for(let i=0;i<12;i++){
+    const h=document.createElement('div');
+    h.className='float-heart';
+    h.textContent=heartChars[i%heartChars.length];
+    h.style.left=Math.random()*100+'vw';
+    h.style.fontSize=(14+Math.random()*22)+'px';
+    h.style.animationDuration=(9+Math.random()*10)+'s';
+    h.style.animationDelay=(Math.random()*8)+'s';
+    document.body.appendChild(h);
+  }
+})();
+</script>
+</body>
+</html>
